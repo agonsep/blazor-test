@@ -1,0 +1,40 @@
+<div class="weather-widget card mb-3">
+    <div class="card-body">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-geo-alt-fill"></i> Denver, Colorado
+                </h5>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="weather-info">
+                    <i class="bi bi-clock"></i>
+                    <span id="current-time">@currentTime</span>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="weather-info">
+                    @if (isLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span> Loading...</span>
+                    }
+                    else if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        <span>@errorMessage</span>
+                    }
+                    else
+                    {
+                        <i class="bi bi-thermometer-half"></i>
+                        <span class="temperature">@temperature°F</span>
+                        @if (!string.IsNullOrEmpty(weatherDescription))
+                        {
+                            <small class="d-block text-muted">@weatherDescription</small>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

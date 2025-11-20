@@ -1,0 +1,64 @@
+using ardu_store.Components;
+using ardu_store.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+// Add API controllers support (if hosting API in same project)
+builder.Services.AddControllers();
+
+// Option 1: Use local API (same project)
+// Uncomment this and set BaseUrl to your local API URL in appsettings.json
+// Example: "BaseUrl": "https://localhost:5001/"
+builder.Services.AddHttpClient<ProductService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+    
+    if (!string.IsNullOrEmpty(baseUrl))
+    {
+        client.BaseAddress = new Uri(baseUrl);
+    }
+    else
+    {
+        // Fallback: use the same host
+        client.BaseAddress = new Uri("https://localhost:7154/"); // Update with your port
+    }
+    
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    
+    // Optional: Add authentication headers if needed
+    // var apiKey = builder.Configuration["ApiSettings:ApiKey"];
+    // if (!string.IsNullOrEmpty(apiKey))
+    // {
+    //     client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
+    // }
+});
+
+// Option 2: Use external API
+// Just update the BaseUrl in appsettings.json to point to your external API
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseHsts();
+}
+
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseHttpsRedirection();
+
+app.UseAntiforgery();
+
+// Map API controllers (if hosting API in same project)
+app.MapControllers();
+
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.Run();
